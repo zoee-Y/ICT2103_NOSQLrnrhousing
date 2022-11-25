@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %} Resale Flat Table {% endblock %}
+{% block head %}
+<script>
+function filter() {
+  var town = document.getElementById("townValue").value
+  var resalePrice = document.getElementById("ResalePriceValue").value
+  var floorArea = document.getElementById("FloorAreaValue").value
+   $.ajax({
+                url: "/updateResaleTable",
+                type: "POST",
+                dataType: 'text',
+                data:{
+                        "town" : town,
+                        "resalePrice":resalePrice,
+                        "floorArea":floorArea
+                        } ,
+                success: function(){
+                        update()
+                },
+                error: function (xhr,thrownError) {
+                    alert(thrownError)
+                    alert('error');
+                }
+            })
+            return false;
+}
+
+function update(){
+    $("#ResaleData").load(location.href + " #ResaleData");
+}
+
+function updateSlider1(val){
+    document.getElementById("ResalePriceValue").innerHTML = val;
+}
+
+function updateSlider2(val){
+    document.getElementById("FloorAreaValue").innerHTML = val;
+}
+
+</script>
+
+<style>
+
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="uk-width-5-6 uk-margin-auto">
+
+  <div class="uk-container uk-container-expand">
+    <h1 class="uk-margin uk-margin-auto uk-text-center">Resale Data</h1>
+  </div>
+
+<br>
+  <!-- Body -->
+   <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+    <div>
+        <div class="uk-form-select" data-uk-form-select>
+        <span>Select Town</span>
+            <br>
+        <select id="townValue">
+            <option value="YISHUN">YISHUN</option>
+            <option value="BUKIT PANJANG">BUKIT PANJANG</option>
+            <option value="JURONG WEST">JURONG WEST</option>
+            <option value="BISHAN">BISHAN</option>
+            <option value="BUKIT BATOK">BUKIT BATOK</option>
+            <option value="QUEENSTOWN">QUEENSTOWN</option>
+            <option value="CENTRAL AREA">CENTRAL AREA</option>
+            <option value="BUKIT TIMAH">BUKIT TIMAH</option>
+            <option value="PASIR RIS">PASIR RIS</option>
+            <option value="BUKIT MERAH">BUKIT MERAH</option>
+            <option value="BEDOK">BEDOK</option>
+            <option value="MARINE PARADE">MARINE PARADE</option>
+            <option value="TOA PAYOH">TOA PAYOH</option>
+            <option value="PUNGGOL">PUNGGOL</option>
+            <option value="TAMPINES">TAMPINES</option>
+            <option value="CHOA CHU KANG">CHOA CHU KANG</option>
+            <option value="WOODLANDS">WOODLANDS</option>
+            <option value="KALLANG/WHAMPOA">KALLANG/WHAMPOA</option>
+            <option value="HOUGANG">HOUGANG</option>
+            <option value="ANG MO KIO">ANG MO KIO</option>
+            <option value="GEYLANG">GEYLANG</option>
+            <option value="JURONG EAST">JURONG EAST</option>
+            <option value="SENGKANG">SENGKANG</option>
+            <option value="SERANGOON">SERANGOON</option>
+            <option value="SEMBAWANG">SEMBAWANG</option>
+            <option value="CLEMENTI">CLEMENTI</option>
+        </select>
+    </div>
+    </div>
+
+    <div>
+         <div class="slidecontainer">
+          <p>Resale Price Range</p>
+          <input type="range" name="amountRange" min="140000" max="1418000" value="1418000" oninput="updateSlider1(this.value)",  />
+          <output id="ResalePriceValue">$1418000</output>
+    </div>
+    </div>
+
+    <div>
+    <div class="slidecontainer">
+          <p>Floor Area Range</p>
+          <input type="range" name="amountRange" min="31" max="249" value="249" oninput="updateSlider2(this.value)"/>
+          <output id="FloorAreaValue">249</output>
+    </div>
+    </div>
+       <div>
+           <br>
+        <button class="uk-button uk-button-primary" onclick="filter()">Filter</button>
+    </div>
+</div>
+
+
+    <br>
+    <div id="ResaleData">
+          <table class="uk-table uk-table-small uk-table-divider uk-table-striped" >
+            <thead>
+                <tr>
+                    <th>Resale Price</th>
+                    <th>Town</th>
+                    <th>Remaining Lease</th>
+                    <th>Floor Area (Square Metres)</th>
+                </tr>
+            </thead>
+            <tbody class="uk-height-large" id='tableContent'>
+              {% for resale_flat in resale_dict %}
+              <tr>
+                <td>${{resale_dict[resale_flat]["resale_price"]}}</td>
+                  <td>{{resale_dict[resale_flat]["town"]}}</td>
+                  <td>{{resale_dict[resale_flat]["remaining_lease"]}}</td>
+                  <td>{{resale_dict[resale_flat]["floor_sqm"]}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+      </div>
+
+
+</div>
+{% endblock %}

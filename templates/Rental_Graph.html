@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %} Admin Console {% endblock %}
+{% block head %}<script src='https://cdn.plot.ly/plotly-latest.min.js'></script> {% endblock %}
+{% block content %}
+
+<div class="uk-width-5-6 uk-margin-auto">
+  <div class="uk-container uk-container-expand">
+    <h1 class="uk-margin uk-margin-auto uk-text-center">Rental Analysis</h1>
+  </div>
+  <!-- Body -->
+
+  <div class="uk-container uk-container-expand uk-margin uk-margin-auto">
+    <div class="uk-margin-large-top">
+      <div class="uk-margin-auto uk-margin-auto-vertical uk-width-1-2@s uk-card-default uk-card-body">
+        <h3 class="uk-card-title">Chart 1</h3>
+        <div id='chart1' class='chart'”></div>
+        <div>{{description1}}</div>
+      </div>
+    </div>
+  </div>
+
+
+    <div class="uk-margin-large-top">
+      <div class="uk-margin-auto uk-margin-auto-vertical uk-width-1-2@s uk-card-default uk-card-body">
+        <h3 class="uk-card-title">Chart 1</h3>
+        <div id='chart2' class='chart'”></div>
+        <div>{{description2}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type='text/javascript'>
+  var graph1 = {{graphJSON | safe}};
+  Plotly.plot('chart1',graph1,{});
+
+   var graph2 = {{graphJSON2 | safe}};
+  Plotly.plot('chart2',graph2,{});
+</script>
+{% endblock %}
+
+
