@@ -1,5 +1,5 @@
 import pandas.core.groupby.groupby
-from flask import Flask, render_template, url_for, redirect, request, session, jsonify,flash
+from flask import Flask, render_template, url_for, redirect, request, session, jsonify, flash
 from flask_navigation import Navigation
 import pandas as pd
 import pymongo
@@ -17,7 +17,7 @@ nav.Bar('top', [
     nav.Item('Home', 'Home'),
     nav.Item('Rental', 'GRental'),
     nav.Item('Resale', 'Resaleindex'),
-    #add more if needed
+    # add more if needed
 ])
 
 client = MongoClient('localhost', 27017)
@@ -60,6 +60,7 @@ def insertResaleDataFromCSV():
     else:
         print("InsertResaleData ran successfully")
 
+
 def displayRentData():
     s = "<table style='border:1px solid red; border-collapse: collapse;'>"
     s = s + '''<tr style='border-bottom: 1px solid black'>
@@ -71,17 +72,18 @@ def displayRentData():
                         <td style='padding: 10px; border-right: 1px solid blue'>lease commencement month</td></tr>
                         '''
 
-    #test display those with lease commencement year 2021 AND june
+    # test display those with lease commencement year 2021 AND june
     for doc in db.rent.find({"lease_commencement_year": 2021, "lease_commencement_month": "Jun"}):
         s = s + "<tr style='border-bottom: 1px solid black'>"
         for row in doc:
-            if str(row) != "_id": #dont print object id
+            if str(row) != "_id":  # dont print object id
                 s = s + "<td style='padding: 10px; border-right: 1px solid blue'>" + str(doc[str(row)]) + "</td>"
         s = s + "</tr>"
 
     s = s + "</table>"
 
     return s
+
 
 def displayResaleData():
     s = "<table style='border:1px solid red; border-collapse: collapse;'>"
@@ -105,24 +107,29 @@ def displayResaleData():
 
     return s
 
-# uncomment if u wanna add to database and see if records are added
-#@app.route("/")
-def index():
 
-    insertRentDataFromCSV() #uncomment these two lines if you want to insert data
+# uncomment if u wanna add to database and see if records are added
+# @app.route("/")
+def index():
+    insertRentDataFromCSV()  # uncomment these two lines if you want to insert data
     insertResaleDataFromCSV()
 
-    #resale: test display those with resale price less than 168000 and flat type 1 room or 3 room
-    #rent:test display those with lease commencement year 2021 AND june
+    # resale: test display those with resale price less than 168000 and flat type 1 room or 3 room
+    # rent:test display those with lease commencement year 2021 AND june
     return "<html><body>" + displayResaleData() + displayRentData() + "</html></body>"
+
+
 @app.route('/Register')
 def Register():
     return render_template("Register.html")
+
+
 @app.route("/")
 def Login():
-
     return render_template("Login.html")
-#add user function
+
+
+# add user function
 @app.route("/registerNewUser", methods=["POST"])
 def registerNewUser():
     if request.method == "POST":
@@ -133,9 +140,10 @@ def registerNewUser():
         mydict["username"] = username
         mydict["password"] = password
         mydict["name"] = name
-        
+
         db["user"].insert_one(mydict)
         return redirect(url_for("Login"))
+
 
 @app.route("/loginUser", methods=["POST"])
 def loginUser():
@@ -165,12 +173,69 @@ def loginUser():
 
         return redirect(url_for("Login"))
 
+
 @app.route('/Home')
 def Home():
     if session.get("loggedIn") == True:
         return render_template("Home.html")
     else:
         redirect(url_for("Login"))
+
+
+@app.route('/AveragePriceResale')
+def GResale():
+    grouped = db.resale.aggregate(
+        [
+            {
+                "$group":
+                    {
+                        "_id": "$town",
+                        "avgResalePrice": {"$avg": "$resale_price"}
+                    }
+            }
+        ]
+    )
+    listing = list(grouped)
+    df = pd.DataFrame(listing)
+
+    fig = px.bar(df, x="_id", y="avgResalePrice", color='_id', barmode="group", labels={
+        "_id": "Town", "avgResalePrice": "Average Resale Price"})
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    header = "Resale Graph "
+    description = """
+    A graph showing the average price comparison between the different areas.
+    """
+    return render_template('AveragePriceResale.html', graphJSON=graphJSON, header=header, description=description)
+
+
+@app.route('/TotalResale')
+def GResale2():
+    grouped = db.resale.aggregate([{
+        '$group': {
+            '_id': '$town',
+            'count': {'$sum': 1}}
+    }, {
+        '$match': {
+            'count': {'$gt': 1}
+        }}])
+    listing2 = list(grouped)
+
+    df = pd.DataFrame(listing2)
+    print(df)
+    fig = px.bar(df, x='_id', y='count', color='_id', barmode="group",labels={
+        "_id": "Town", "count": "Number of Resale"})
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    header = "Resale Graph 2"
+    description = """
+    A graph showing the highest resale comparison between the different areas.
+    """
+    return render_template('TotalResale.html', graphJSON=graphJSON, header=header, description=description)
+
+@app.route('/ResaleGraph')
+def Resaleindex():
+    return render_template('Resale_Graph.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
