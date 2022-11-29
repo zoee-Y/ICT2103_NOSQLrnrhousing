@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+</head>
+<!--<body>-->
+<body>
+<div>
+    <main class="container">
+        <h1>Member Login</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == "LoginError" %}
+                        <p style="color: red" class="{{ category }}">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+         <form action="/loginUser" method="post">
+             <div class = "form-group">
+                 <label>Username:</label><br>
+                 <input class = "form-control" id="username" required oninput="validate('username')" type="text" name="username" placeholder="Enter Username">
+                 <div id = "usernameError" style="display: none"></div>
+             </div>
+             <br>
+             <div class = "form-group">
+                 <label>Password:</label><br>
+                 <input class = "form-control" id="password" required oninput="validate('password')" type="password" name="password" placeholder="Enter password">
+                 <div id = "passwordError" style="display: none"></div>
+             </div>
+             <br>
+             <div class = "form-group">
+                 <button class="btn btn-primary" type="submit">Submit</button>
+             </div>
+<!--             <label>UserId</label><br>-->
+<!--             <input name="user_id" type="number" placeholder="Enter User Id"><br><br>-->
+<!--             <label>Password</label><br>-->
+<!--             <input name="password" type="password" placeholder="Enter Password"><br><br>-->
+<!--             <input type="submit" value="LOGIN"><br><br>-->
+         </form>
+        <p>
+            New here? Please go to
+            <a href="/Register">Sign Up</a> as a member.
+        </p>
+    </main>
+
+</div>
+
+<script>
+    var formValid;
+
+    function validate(input) {
+        if (input == 'username') {
+            if (document.getElementById("username").value == "") {
+                document.getElementById("usernameError").style = "display: block; color: red";
+                document.getElementById("usernameError").innerHTML = "Username cannot be empty!";
+                formValid = false;
+            }
+            else {
+                document.getElementById("usernameError").style = "display: none";
+                formValid = true;
+            }
+        }
+
+        if (input == 'password') {
+            if (document.getElementById("password").value == "") {
+                document.getElementById("passwordError").style = "display: block; color: red";
+                document.getElementById("passwordError").innerHTML = "Password cannot be empty!";
+                formValid = false;
+            }
+            else {
+                document.getElementById("passwordError").style = "display: none";
+                formValid = true;
+            }
+        }
+    }
+</script>
+
+
+</body>
+</html>
+

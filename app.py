@@ -1,5 +1,5 @@
 import pandas.core.groupby.groupby
-from flask import Flask, render_template, url_for, redirect, request, session, jsonify
+from flask import Flask, render_template, url_for, redirect, request, session, jsonify,flash
 from flask_navigation import Navigation
 import pandas as pd
 import pymongo
@@ -106,7 +106,7 @@ def displayResaleData():
     return s
 
 # uncomment if u wanna add to database and see if records are added
-@app.route("/")
+#@app.route("/")
 def index():
 
     insertRentDataFromCSV() #uncomment these two lines if you want to insert data
@@ -115,8 +115,62 @@ def index():
     #resale: test display those with resale price less than 168000 and flat type 1 room or 3 room
     #rent:test display those with lease commencement year 2021 AND june
     return "<html><body>" + displayResaleData() + displayRentData() + "</html></body>"
+@app.route('/Register')
+def Register():
+    return render_template("Register.html")
+@app.route("/")
+def Login():
 
+    return render_template("Login.html")
+#add user function
+@app.route("/registerNewUser", methods=["POST"])
+def registerNewUser():
+    if request.method == "POST":
+        username = request.form["username"]
+        name = request.form["name"]
+        password = request.form["password"]
+        mydict = {}
+        mydict["username"] = username
+        mydict["password"] = password
+        mydict["name"] = name
+        
+        db["user"].insert_one(mydict)
+        return redirect(url_for("Login"))
 
+@app.route("/loginUser", methods=["POST"])
+def loginUser():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        aDict = {}
+        aDict["username"] = username
+        aDict["password"] = password
+        x = db["user"].find(aDict)
+        result = list(x)
+        if len(result) == 0:
+            session["loggedIn"] = False
+            flash("Invalid username or password!", "LoginError")
+            return redirect(url_for("Login"))
+        elif len(result) == 1:
+            session["loggedIn"] = True
+            session["loggedInUser"] = username
+            if session.get("loginMsg") == True:
+                del session["loginMsg"]
+            return "<html><body>" + displayResaleData() + displayRentData() + "</html></body>"
+        else:
+            session["loggedIn"] = False
+            flash("Error occured!", "LoginError")
+            return redirect(url_for("Login"))
+
+        return redirect(url_for("Login"))
+
+@app.route('/Home')
+def Home():
+    if session.get("loggedIn") == True:
+        return render_template("Home.html")
+    else:
+        redirect(url_for("Login"))
 
 if __name__ == "__main__":
     app.run(debug=True)
