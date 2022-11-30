@@ -362,8 +362,8 @@ def rentalTable():
     else:
         filter_dict = session["filter_rental"]
         rental_dict = db.rent.find(
-            {"monthlyGrossRent": {"$lt": [filter_dict["monthlyGrossRent"]]},
-             "bedroomNo": {"$in": [filter_dict["bedroomNo"]]}})
+            {"monthly_gross_rent": {"$lt": [filter_dict["monthlyGrossRent"]]},
+             "no_of_bedroom": {"$in": [filter_dict["bedroomNo"]]}})
         return render_template('Rental_Table.html', rental_dict=rental_dict)
 
 @app.route("/updateRentalTable", methods=["POST"])
@@ -372,7 +372,7 @@ def updateRentalTable():
         session.pop("filter")
     monthlyGrossRent = int(request.form["monthlyGrossRent"])
     bedroomNo = request.form["bedroomNo"] + " ROOM"
-    session["filter"] = {"monthlyGrossRent": monthlyGrossRent, "bedroomNo": bedroomNo}
+    session["filter_rental"] = {"monthly_gross_rent": monthlyGrossRent, "no_of_bedroom": bedroomNo}
     return redirect(url_for("rentalTable"))
 
 @app.route("/Profile")
