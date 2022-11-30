@@ -128,6 +128,10 @@ def Register():
 def Login():
     return render_template("Login.html")
 
+@app.route("/changePassword")
+def changePassword():
+    return render_template("Password.html")
+
 
 # add user function
 @app.route("/registerNewUser", methods=["POST"])
@@ -175,7 +179,29 @@ def loginUser():
 
         return redirect(url_for("Login"))
 
+@app.route("/changePassword1", methods=["POST"])
+def changePassword2():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
+        aDict = {}
+        aDict["username"] = username
+
+        x = db["user"].find(aDict)
+        result = list(x)
+        if len(result) == 0:
+            session["loggedIn"] = False
+            flash("Invalid username or password!", "LoginError")
+            return redirect(url_for("Login"))
+        elif len(result) == 1:
+            test = {"username": username}
+            test1 = {"$set":{"password": password}}
+            db["user"].update_one(test,test1)
+
+
+
+        return redirect(url_for("Login"))
 @app.route('/Home')
 def Home():
     if session.get("loggedIn") == True:
