@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Preference</title>
+    <style>
+    table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 30%;
+    }
+    td, th {
+    border: 1px solid #dddddd;
+    font-size: 13px;
+    text-align: left;
+    padding: 1px;
+    }
+    ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    }
+    li {
+    float: left;
+    }
+    li a:hover {
+    background-color: #111;
+    }
+    li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    }
+    </style>
+</head>
+<body>
+<div>
+    <main class="container">
+        <h1>Profile</h1>
+        <div class = "form-group">
+            <label class="form-control">Username: {{ session["loggedInUser"] }}</label><br>
+        </div>
+        <form action="/deleteUser" method="post">
+            <div class = "form-group">
+                <button class="btn btn-primary" type="submit">Delete Account</button>
+            </div>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == "Error" %}
+                        <p style="color: red" class="{{ category }}">{{ message }}</p>
+                    {% endif %}
+                    {% if category == "PreferenceSuccess" %}
+                        <p style="color: green" class="{{ category }}">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h2>Preference</h2>
+         <form action="/updatePreference" method="post">
+             <div class = "form-group">
+                 <label>House type:</label>
+                 <input class = "form-control" id="house_type_id" required oninput="validate('house_type_id')" type="number" min="1" max="12" name="house_type_id" placeholder="1-12">
+                 <div id = "house_type_idError" style="display: none"></div>
+                 <table>
+                     <tr>
+                         <th>House Type</th>
+                         <th>Purpose</th>
+                         <th>Number of Rooms</th>
+                     </tr>
+                     <tr>
+                         <td>1-6</td>
+                         <td>Rent</td>
+                         <td>1-6</td>
+                     </tr>
+                     <tr>
+                         <td>7</td>
+                         <td>Rent</td>
+                         <td>8</td>
+                     </tr>
+                     <tr>
+                         <td>8</td>
+                         <td>Resale</td>
+                         <td>1</td>
+                     </tr>
+                     <tr>
+                         <td>9</td>
+                         <td>Resale</td>
+                         <td>2</td>
+                     </tr>
+                     <tr>
+                         <td>10</td>
+                         <td>Resale</td>
+                         <td>3</td>
+                     </tr>
+                     <tr>
+                         <td>11</td>
+                         <td>Resale</td>
+                         <td>4</td>
+                     </tr>
+                     <tr>
+                         <td>12</td>
+                         <td>Resale</td>
+                         <td>5</td>
+                     </tr>
+                 </table>
+             </div>
+             <br>
+             <div class = "form-group">
+                 <label>District Code:</label>
+                 <input class = "form-control" id="district_code" required oninput="validate('district_code')" type="number" min="1" max="28" name="district_code" placeholder="1-28">
+                 <div id = "district_codeError" style="display: none"></div>
+             </div>
+             <br>
+             <div class = "form-group">
+                 <label>Town:</label>
+                 <input class = "form-control" id="town" required oninput="validate('town')" type="text" name="town" placeholder="Enter Town">
+                 <div id = "townError" style="display: none"></div>
+             </div>
+             <br>
+             <div class = "form-group">
+                 <button class="btn btn-primary" type="submit">Save</button>
+             </div>
+         </form>
+    </main>
+
+</div>
+
+<script>
+    var formValid;
+
+    function validate(input) {
+        if (input == 'house_type_id') {
+            if (document.getElementById("house_type_id").value == "") {
+                document.getElementById("house_type_idError").style = "display: block; color: red";
+                document.getElementById("house_type_idError").innerHTML = "House Type cannot be empty!";
+                formValid = false;
+            }
+            else {
+                document.getElementById("house_type_idError").style = "display: none";
+                formValid = true;
+            }
+        }
+
+        if (input == 'district_code') {
+            if (document.getElementById("district_code").value == "") {
+                document.getElementById("district_codeError").style = "display: block; color: red";
+                document.getElementById("district_codeError").innerHTML = "District Code cannot be empty!";
+                formValid = false;
+            }
+            else {
+                document.getElementById("district_codeError").style = "display: none";
+                formValid = true;
+            }
+        }
+        if (input == 'town') {
+            if (document.getElementById("town").value == "") {
+                document.getElementById("townError").style = "display: block; color: red";
+                document.getElementById("townError").innerHTML = "Town cannot be empty!";
+                formValid = false;
+            }
+            else {
+                document.getElementById("district_codeError").style = "display: none";
+                formValid = true;
+            }
+        }
+    }
+</script>
+
+
+</body>
+</html>

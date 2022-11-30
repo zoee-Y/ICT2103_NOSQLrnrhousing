@@ -375,6 +375,20 @@ def updateRentalTable():
     session["filter"] = {"monthlyGrossRent": monthlyGrossRent, "bedroomNo": bedroomNo}
     return redirect(url_for("rentalTable"))
 
+@app.route("/Profile")
+def Profile():
+    if session.get("loggedIn") == True:
+        return render_template("Profile.html")
+    else:
+        redirect(url_for("Login"))
+
+@app.route("/deleteUser", methods=["POST"])
+def deleteUser():
+    if request.method == "POST":
+        db.user.delete_one({"username": str(session["loggedInUser"])})
+        print("User Removed!")
+        return redirect(url_for("Login"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
