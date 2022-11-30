@@ -238,6 +238,94 @@ def GResale2():
 @app.route('/ResaleGraph')
 def Resaleindex():
     return render_template('Resale_Graph.html')
+@app.route('/Rental')
+def GRental():
+    AvgRentalOverTime = db.rent.aggregate(
+        [
+            {
+                "$group":
+                    {
+                        '_id': '$lease_commencement_year',
+                        "avgRentalFee": {"$avg": "$monthly_gross_rent"},
 
+                    }
+            }, {"$sort": {"_id": 1}}
+        ]
+    )
+    AvgRentalOverTimeList = list(AvgRentalOverTime)
+    AvgRentalOverTimeDF = pd.DataFrame(AvgRentalOverTimeList)
+    fig1 = px.line(AvgRentalOverTimeDF, x="_id", y="avgRentalFee", title='Average Rental Price Over Years',labels={
+        "_id": "Lease Commencement date", "count": "Average Rental Fees"})
+    graphJSON1 = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+    description1 = """
+    A graph showing the increase of rental prices over the years.
+    """
+
+    AvgRentalByPostalDistrict = db.rent.aggregate(
+        [
+            {
+                "$group":
+                    {
+                        '_id': '$postal_district',
+                        "avgRentalFee": {"$avg": "$monthly_gross_rent"},
+
+                    }
+            }, {"$sort": {"_id": 1}}
+        ]
+    )
+    AvgRentalByPostalDistrictList = list(AvgRentalByPostalDistrict)
+    AvgRentalByPostalDistrictDF = pd.DataFrame(AvgRentalByPostalDistrictList)
+    fig2 = px.bar(AvgRentalByPostalDistrictDF, x="_id", y="avgRentalFee", title='Average Rental Price Over Postal District',labels={
+        "_id": "Postal Distict", "count": "Average Rental Fees"})
+    graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+    description2 = """
+  A graph showing the average price comparison between the different areas.
+    """
+
+    ResalePriceNoRooms = db.rent.aggregate(
+        [
+            {
+                "$group":
+                    {
+                        '_id': '$no_of_bedroom',
+                        "avgRentalFee": {"$avg": "$monthly_gross_rent"},
+
+                    }
+            }, {"$sort": {"_id": 1}}
+        ]
+    )
+    ResalePriceNoRoomsList = list(ResalePriceNoRooms)
+    ResalePriceNoRoomsDF = pd.DataFrame(ResalePriceNoRoomsList)
+    fig3 = px.bar(ResalePriceNoRoomsDF, x="_id", y="avgRentalFee", title='Average Resale Price Over No. of Rooms',labels={
+        "_id": "Number of Rooms", "count": "Average Rental Fees"})
+    graphJSON3 = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+    description3 = """
+    A graph showing the average price comparison between the different room size.
+    """
+    return render_template('Rental_Graph.html', graphJSON=graphJSON1,graphJSON2=graphJSON2,graphJSON3=graphJSON3, description1=description1,description2 = description2,description3 = description3 )
+
+@app.route('/ResaleTable')
+def resaleTable():
+    if "filter_resale" not in session:
+        resale_dict = db.resale.find({})
+        return render_template('Resale_Table.html', resale_dict = resale_dict)
+
+    else:
+        filter_dict = session["filter_resale"]
+
+        resale_dict = db.resale.find({"resale_price": {"$lt": filter_dict["resalePrice"]}, "flat_type": {"$in":[filter_dict["roomNo"]]},"town":{"$in":[filter_dict["town"]]},"floor_area":{"$lt": filter_dict["floorArea"]}})
+        return render_template('Resale_Table.html', resale_dict = resale_dict)
+
+
+@app.route("/updateResaleTable", methods=["POST"])
+def updateResaleTable():
+    if "filter_resale" in session:
+        session.pop("filter_resale")
+    resalePrice = int(request.form["resalePrice"])
+    town = request.form["town"]
+    floorArea = int(request.form["floorArea"])
+    roomNo = request.form["roomNo"] + " ROOM"
+    session['filter_resale'] = {"resalePrice":resalePrice,"town":town,"floorArea":floorArea, "roomNo":roomNo}
+    return redirect(url_for("resaleTable"))
 if __name__ == "__main__":
     app.run(debug=True)

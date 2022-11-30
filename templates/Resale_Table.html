@@ -6,6 +6,7 @@ function filter() {
   var town = document.getElementById("townValue").value
   var resalePrice = document.getElementById("ResalePriceValue").value
   var floorArea = document.getElementById("FloorAreaValue").value
+  var roomNo = document.getElementById("roomNoValue").value
    $.ajax({
                 url: "/updateResaleTable",
                 type: "POST",
@@ -13,7 +14,8 @@ function filter() {
                 data:{
                         "town" : town,
                         "resalePrice":resalePrice,
-                        "floorArea":floorArea
+                        "floorArea":floorArea,
+                        "roomNo":roomNo
                         } ,
                 success: function(){
                         update()
@@ -95,7 +97,7 @@ function updateSlider2(val){
          <div class="slidecontainer">
           <p>Resale Price Range</p>
           <input type="range" name="amountRange" min="140000" max="1418000" value="1418000" oninput="updateSlider1(this.value)",  />
-          <output id="ResalePriceValue">$1418000</output>
+          <output id="ResalePriceValue">1418000</output>
     </div>
     </div>
 
@@ -104,6 +106,19 @@ function updateSlider2(val){
           <p>Floor Area Range</p>
           <input type="range" name="amountRange" min="31" max="249" value="249" oninput="updateSlider2(this.value)"/>
           <output id="FloorAreaValue">249</output>
+    </div>
+    </div>
+       <div>
+        <div class="uk-form-select" data-uk-form-select>
+        <span>Select No. of Rooms</span>
+            <br>
+        <select id="roomNoValue">
+            <option value="1">1 ROOM</option>
+            <option value="2">2 ROOM</option>
+            <option value="3">3 ROOM</option>
+            <option value="4">4 ROOM</option>
+            <option value="5">5 ROOM</option>
+        </select>
     </div>
     </div>
        <div>
@@ -122,15 +137,18 @@ function updateSlider2(val){
                     <th>Town</th>
                     <th>Remaining Lease</th>
                     <th>Floor Area (Square Metres)</th>
+                    <th>No. of Rooms</th>
                 </tr>
             </thead>
             <tbody class="uk-height-large" id='tableContent'>
               {% for resale_flat in resale_dict %}
               <tr>
-                <td>${{resale_dict[resale_flat]["resale_price"]}}</td>
-                  <td>{{resale_dict[resale_flat]["town"]}}</td>
-                  <td>{{resale_dict[resale_flat]["remaining_lease"]}}</td>
-                  <td>{{resale_dict[resale_flat]["floor_sqm"]}}</td>
+                <td>${{resale_flat.resale_price}}</td>
+                  <td>{{resale_flat.town}}</td>
+                  <td>{{resale_flat.remaining_lease}}</td>
+                  <td>{{resale_flat.floor_area}}</td>
+                   <td>{{resale_flat.flat_type}}</td>
+
               </tr>
               {% endfor %}
             </tbody>
