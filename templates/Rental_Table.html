@@ -99,8 +99,8 @@ function updateSlider2(val){
             <tbody class="uk-height-large" id='tableContent'>
               {% for rental_flat in rental_dict %}
               <tr>
-                <td>${{rental_flat.floor_area}}</td>
-                  <td>{{rental_flat.no_of_rooms}}</td>
+                <td>{{rental_flat.floor_area}}</td>
+                  <td>{{rental_flat.no_of_bedroom}}</td>
                   <td>{{rental_flat.monthly_gross_rent}}</td>
                   <td>{{rental_flat.postal_district}}</td>
                    <td>{{rental_flat.lease_commencement_year}}</td>

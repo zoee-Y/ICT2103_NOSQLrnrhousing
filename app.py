@@ -357,21 +357,21 @@ def updateResaleTable():
 @app.route('/RentalTable')
 def rentalTable():
     if "filter_rental" not in session:
-        rental_dict = db.rent.find({})
+        rental_dict = db.rent.find({}).limit(100)
         return render_template('Rental_Table.html', rental_dict=rental_dict)
     else:
         filter_dict = session["filter_rental"]
         rental_dict = db.rent.find(
-            {"monthly_gross_rent": {"$lt": [filter_dict["monthlyGrossRent"]]},
-             "no_of_bedroom": {"$in": [filter_dict["bedroomNo"]]}})
+            {"monthly_gross_rent": {"$lt": filter_dict["monthly_gross_rent"]},
+             "no_of_bedroom": {"$in": [filter_dict["no_of_bedroom"]]}})
         return render_template('Rental_Table.html', rental_dict=rental_dict)
 
 @app.route("/updateRentalTable", methods=["POST"])
 def updateRentalTable():
     if "filter_rental" in session:
-        session.pop("filter")
+        session.pop("filter_rental")
     monthlyGrossRent = int(request.form["monthlyGrossRent"])
-    bedroomNo = request.form["bedroomNo"] + " ROOM"
+    bedroomNo = int(request.form["bedroomNo"])
     session["filter_rental"] = {"monthly_gross_rent": monthlyGrossRent, "no_of_bedroom": bedroomNo}
     return redirect(url_for("rentalTable"))
 
