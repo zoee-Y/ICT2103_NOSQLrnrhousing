@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %} Rental Flat Table {% endblock %}
+{% block head %}
+<script>
+function filter() {
+  var bedroomNo = document.getElementById("bedroomNoValue").value
+  var monthlyGrossRent = document.getElementById("MonthlyGrossRentValue").value
+  var floorArea = document.getElementById("FloorAreaValue").value
+   $.ajax({
+                url: "/updateRentalTable",
+                type: "POST",
+                dataType: 'text',
+                data:{
+                        "bedroomNo" : bedroomNo,
+                        "monthlyGrossRent":monthlyGrossRent,
+                        "floorArea":floorArea,
+                        } ,
+                success: function(){
+                        update()
+                },
+                error: function (xhr,thrownError) {
+                    alert(thrownError)
+                    alert('error');
+                }
+            })
+            return false;
+}
+
+function update(){
+    $("#RentalData").load(location.href + " #RentalData");
+}
+
+function updateSlider1(val){
+    document.getElementById("MonthlyGrossRentValue").innerHTML = val;
+}
+
+function updateSlider2(val){
+    document.getElementById("FloorAreaValue").innerHTML = val;
+}
+
+</script>
+
+<style>
+
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="uk-width-5-6 uk-margin-auto">
+
+  <div class="uk-container uk-container-expand">
+    <h1 class="uk-margin uk-margin-auto uk-text-center">Rental Data</h1>
+  </div>
+
+<br>
+  <!-- Body -->
+   <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+    </div>
+
+    <div>
+         <div class="slidecontainer">
+          <p>Rental Price Range</p>
+          <input type="range" name="amountRange" min="2000" max="20000" value="5000" oninput="updateSlider1(this.value)",  />
+          <output id="">5000</output>
+    </div>
+    </div>
+
+    <div>
+    <div class="slidecontainer">
+          <p>Floor Area Range</p>
+          <input type="range" name="amountRange" min="31" max="300" value="120" oninput="updateSlider2(this.value)"/>
+          <output id="FloorAreaValue">120</output>
+    </div>
+    </div>
+       <div>
+        <div class="uk-form-select" data-uk-form-select>
+        <span>Select No. of Rooms</span>
+            <br>
+        <select id="bedroomNoValue">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+    </div>
+       <div>
+           <br>
+        <button class="uk-button uk-button-primary" onclick="filter()">Filter</button>
+    </div>
+</div>
+
+
+    <br>
+    <div id="RentalData">
+          <table class="uk-table uk-table-small uk-table-divider uk-table-striped" >
+            <thead>
+                <tr>
+                    <th>Floor Area</th>
+                    <th>No. of Rooms</th>
+                    <th>Monthly Rent</th>
+                    <th>Postal District</th>
+                    <th>Lease Commencement Year</th>
+                    <th>Lease Commencement Month</th>
+                </tr>
+            </thead>
+            <tbody class="uk-height-large" id='tableContent'>
+              {% for rental_flat in rental_dict %}
+              <tr>
+                <td>${{rental_flat.floor_area}}</td>
+                  <td>{{rental_flat.no_of_rooms}}</td>
+                  <td>{{rental_flat.monthly_gross_rent}}</td>
+                  <td>{{rental_flat.postal_district}}</td>
+                   <td>{{rental_flat.lease_commencement_year}}</td>
+                  <td>{{rental_flat.lease_commencement_month}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+      </div>
+
+
+</div>
+{% endblock %}
