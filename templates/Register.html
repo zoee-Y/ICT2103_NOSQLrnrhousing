@@ -33,6 +33,9 @@
                  <button class="btn btn-primary" type="submit">Submit</button>
              </div>
          </form>
+         {%if error %}
+         <p><strong>Error:</strong>{{error}}</p>
+         {%endif%}
         <p>
             Already a member? Please go to
             <a href="/Login">Login</a>.

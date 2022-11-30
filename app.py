@@ -140,11 +140,13 @@ def registerNewUser():
         mydict["username"] = username
         mydict["password"] = password
         mydict["name"] = name
-
-        db["user"].insert_one(mydict)
-        return redirect(url_for("Login"))
-
-
+        x = db["user"].find_one({"username":username})
+        if(x==None):
+            db["user"].insert_one(mydict)
+            return redirect(url_for("Login"))
+        else:
+            error = "Existing user already in database"
+            return render_template("Register.html", error = error)
 @app.route("/loginUser", methods=["POST"])
 def loginUser():
     if request.method == "POST":
