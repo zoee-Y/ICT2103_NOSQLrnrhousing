@@ -171,7 +171,7 @@ def loginUser():
             session["loggedInUser"] = username
             if session.get("loginMsg") == True:
                 del session["loginMsg"]
-            return "<html><body>" + displayResaleData() + displayRentData() + "</html></body>"
+            return "<html><body>"+" <ul><li><a href=""AveragePriceResale"">Resale Graph</a></li><li><a href=""Rental"">Rental Graph</a></li></ul>" + displayResaleData() + displayRentData() + "</html></body>"
         else:
             session["loggedIn"] = False
             flash("Error occured!", "LoginError")
