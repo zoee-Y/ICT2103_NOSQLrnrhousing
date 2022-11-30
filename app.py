@@ -1,6 +1,6 @@
 import pandas.core.groupby.groupby
 from flask import Flask, render_template, url_for, redirect, request, session, jsonify, flash
-from flask_navigation import Navigation
+#from flask_navigation import Navigation
 import pandas as pd
 import pymongo
 from pymongo import MongoClient
@@ -10,15 +10,15 @@ import plotly.express as px
 import os
 
 app = Flask(__name__)
-nav = Navigation(app)
+#nav = Navigation(app)
 app.secret_key = os.urandom(32)
 
-nav.Bar('top', [
-    nav.Item('Home', 'Home'),
-    nav.Item('Rental', 'GRental'),
-    nav.Item('Resale', 'Resaleindex'),
+#nav.Bar('top', [
+    #nav.Item('Home', 'Home'),
+    #nav.Item('Rental', 'GRental'),
+    #nav.Item('Resale', 'Resaleindex'),
     # add more if needed
-])
+#])
 
 client = MongoClient('localhost', 27017)
 
@@ -356,25 +356,23 @@ def updateResaleTable():
 
 @app.route('/RentalTable')
 def rentalTable():
-    if "filter" not in session:
+    if "filter_rental" not in session:
         rental_dict = db.rent.find({})
         return render_template('Rental_Table.html', rental_dict=rental_dict)
     else:
-        filter_dict = session["filter"]
+        filter_dict = session["filter_rental"]
         rental_dict = db.rent.find(
-            {"floorArea": {"$lt": filter_dict["floorArea"]},
-             "monthlyGrossRent": {"$lt": [filter_dict["monthlyGrossRent"]]},
+            {"monthlyGrossRent": {"$lt": [filter_dict["monthlyGrossRent"]]},
              "bedroomNo": {"$in": [filter_dict["bedroomNo"]]}})
         return render_template('Rental_Table.html', rental_dict=rental_dict)
 
 @app.route("/updateRentalTable", methods=["POST"])
 def updateRentalTable():
-    if "filter" in session:
+    if "filter_rental" in session:
         session.pop("filter")
-    floorArea = int(request.form["floorArea"])
     monthlyGrossRent = int(request.form["monthlyGrossRent"])
     bedroomNo = request.form["bedroomNo"] + " ROOM"
-    session["filter"] = {"floorArea": floorArea, "monthlyGrossRent": monthlyGrossRent, "bedroomNo": bedroomNo}
+    session["filter"] = {"monthlyGrossRent": monthlyGrossRent, "bedroomNo": bedroomNo}
     return redirect(url_for("rentalTable"))
 
 

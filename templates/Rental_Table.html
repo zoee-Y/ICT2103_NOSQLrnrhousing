@@ -5,7 +5,6 @@
 function filter() {
   var bedroomNo = document.getElementById("bedroomNoValue").value
   var monthlyGrossRent = document.getElementById("MonthlyGrossRentValue").value
-  var floorArea = document.getElementById("FloorAreaValue").value
    $.ajax({
                 url: "/updateRentalTable",
                 type: "POST",
@@ -13,7 +12,6 @@ function filter() {
                 data:{
                         "bedroomNo" : bedroomNo,
                         "monthlyGrossRent":monthlyGrossRent,
-                        "floorArea":floorArea,
                         } ,
                 success: function(){
                         update()
@@ -62,15 +60,7 @@ function updateSlider2(val){
          <div class="slidecontainer">
           <p>Rental Price Range</p>
           <input type="range" name="amountRange" min="2000" max="20000" value="5000" oninput="updateSlider1(this.value)",  />
-          <output id="">5000</output>
-    </div>
-    </div>
-
-    <div>
-    <div class="slidecontainer">
-          <p>Floor Area Range</p>
-          <input type="range" name="amountRange" min="31" max="300" value="120" oninput="updateSlider2(this.value)"/>
-          <output id="FloorAreaValue">120</output>
+          <output id="MonthlyGrossRentValue">5000</output>
     </div>
     </div>
        <div>
